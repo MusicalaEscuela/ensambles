@@ -1,0 +1,37 @@
+rules_version = '2';
+
+// Reglas de Firestore para Musicala Ensambles
+// Permiten leer y escribir solo en las colecciones que usa la app,
+// sin fecha de expiración (a diferencia del "modo de prueba" de Firebase).
+//
+// Cómo subirlas:
+// 1. Entra a https://console.firebase.google.com y abre el proyecto "ensambles-musicala"
+// 2. En el menú lateral: Firestore Database → pestaña "Reglas" (Rules)
+// 3. Borra lo que haya, pega todo el contenido de este archivo y presiona "Publicar"
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Colecciones de la app: bandas, estudiantes, canciones, ensayos y bitácoras
+    match /bands/{doc} {
+      allow read, write: if true;
+    }
+    match /students/{doc} {
+      allow read, write: if true;
+    }
+    match /songs/{doc} {
+      allow read, write: if true;
+    }
+    match /rehearsals/{doc} {
+      allow read, write: if true;
+    }
+    match /logs/{doc} {
+      allow read, write: if true;
+    }
+
+    // Cualquier otra colección queda bloqueada
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

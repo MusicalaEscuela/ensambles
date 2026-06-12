@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Musicala Ensambles</title>
+  <link rel="icon" type="image/png" href="./logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <img class="brand-logo" src="./logo.png" alt="Musicala" />
+        <div>
+          <p class="eyebrow">Musicala</p>
+          <h1>Ensambles</h1>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-btn active" data-view="dashboard">Panel</button>
+        <button class="nav-btn" data-view="bands">Bandas</button>
+        <button class="nav-btn" data-view="students">Estudiantes</button>
+        <button class="nav-btn" data-view="songs">Canciones</button>
+        <button class="nav-btn" data-view="rehearsals">Ensayos</button>
+        <button class="nav-btn" data-view="logs">Bitácoras</button>
+      </nav>
+
+      <div class="mode-card" id="modeCard">
+        <span class="dot"></span>
+        <div>
+          <strong id="modeTitle">Conectando...</strong>
+          <p id="modeText">Preparando todo.</p>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Seguimiento de ensambles</p>
+          <h2 id="viewTitle">Panel general</h2>
+        </div>
+      </header>
+
+      <section id="dashboard" class="view active">
+        <div class="stats-grid">
+          <article class="stat-card"><span>Bandas</span><strong id="statBands">0</strong></article>
+          <article class="stat-card"><span>Estudiantes</span><strong id="statStudents">0</strong></article>
+          <article class="stat-card"><span>Canciones</span><strong id="statSongs">0</strong></article>
+          <article class="stat-card"><span>Ensayos</span><strong id="statRehearsals">0</strong></article>
+        </div>
+        <div class="dashboard-grid">
+          <section class="panel">
+            <div class="panel-head"><h3>Bandas activas</h3><span>Integrantes y repertorio</span></div>
+            <div id="bandOverview" class="cards-list"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><h3>Próximos ensayos</h3><span>Agenda rápida</span></div>
+            <div id="upcomingRehearsals" class="cards-list"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><h3>Últimas bitácoras</h3><span>Cómo va el proceso</span></div>
+            <div id="recentLogs" class="cards-list"></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="bands" class="view">
+        <div class="layout-two">
+          <form class="panel form" id="bandForm">
+            <h3>Nueva banda</h3>
+            <input type="hidden" id="bandId" />
+            <label>Nombre <input id="bandName" required placeholder="Ej. Young Metal" /></label>
+            <label>Nivel <select id="bandLevel"><option>Inicial</option><option>Intermedio</option><option>Avanzado</option></select></label>
+            <label>Docente que la dirige <input id="bandTeacher" placeholder="Nombre del profe" /></label>
+            <label>Día y hora de ensayo <input id="bandSchedule" placeholder="Sábados 11:00 a.m." /></label>
+            <label>Meta de la banda <textarea id="bandGoal" rows="3" placeholder="Qué están preparando (muestra, concierto, repertorio...)"></textarea></label>
+            <p class="hint">El logo de cada banda se guarda en la carpeta <strong>logos</strong> con el nombre de la banda (ej. <em>logos/young-metal.png</em>). Mientras llega, se muestra la inicial.</p>
+            <button class="primary" type="submit">Guardar banda</button>
+          </form>
+          <section class="panel"><div class="panel-head"><h3>Listado</h3><span id="bandsCount">0 bandas</span></div><div id="bandsList" class="cards-list"></div></section>
+        </div>
+      </section>
+
+      <section id="students" class="view">
+        <div class="layout-two">
+          <form class="panel form" id="studentForm">
+            <h3>Nuevo estudiante</h3>
+            <input type="hidden" id="studentId" />
+            <label>Nombre <input id="studentName" required placeholder="Nombre completo" /></label>
+            <label>Instrumento / rol <input id="studentInstrument" placeholder="Voz, guitarra, bajo, batería..." /></label>
+            <label>Banda <select id="studentBand"></select></label>
+            <label>Observaciones <textarea id="studentNotes" rows="3" placeholder="Disponibilidad, proceso, en qué necesita apoyo"></textarea></label>
+            <button class="primary" type="submit">Guardar estudiante</button>
+          </form>
+          <section class="panel"><div class="panel-head"><h3>Integrantes</h3><span id="studentsCount">0 estudiantes</span></div><div id="studentsList" class="cards-list"></div></section>
+        </div>
+      </section>
+
+      <section id="songs" class="view">
+        <div class="layout-two">
+          <form class="panel form" id="songForm">
+            <h3>Nueva canción</h3>
+            <input type="hidden" id="songId" />
+            <label>Título <input id="songTitle" required placeholder="Ej. Sweet Child O' Mine" /></label>
+            <label>Artista / versión de referencia <input id="songArtist" placeholder="Guns N' Roses" /></label>
+            <label>Banda <select id="songBand"></select></label>
+            <label>Estado <select id="songStatus"><option>Propuesta</option><option>En montaje</option><option>Lista</option><option>En pausa</option></select></label>
+            <label>Tonalidad, links o apuntes <textarea id="songNotes" rows="3"></textarea></label>
+            <button class="primary" type="submit">Guardar canción</button>
+          </form>
+          <section class="panel"><div class="panel-head"><h3>Repertorio</h3><span id="songsCount">0 canciones</span></div><div id="songsList" class="cards-list"></div></section>
+        </div>
+      </section>
+
+      <section id="rehearsals" class="view">
+        <div class="layout-two">
+          <form class="panel form" id="rehearsalForm">
+            <h3>Nuevo ensayo</h3>
+            <input type="hidden" id="rehearsalId" />
+            <label>Banda <select id="rehearsalBand"></select></label>
+            <label>Fecha y hora <input id="rehearsalDate" type="datetime-local" required /></label>
+            <label>¿Se repite? <select id="rehearsalRepeat">
+              <option value="1">Solo este ensayo</option>
+              <option value="4">Cada semana, durante 1 mes</option>
+              <option value="8">Cada semana, durante 2 meses</option>
+              <option value="12">Cada semana, durante 3 meses</option>
+            </select></label>
+            <label>Lugar <input id="rehearsalPlace" placeholder="Sede Musicala / Salón" /></label>
+            <label>Qué se va a trabajar <textarea id="rehearsalGoal" rows="3"></textarea></label>
+            <label>Cómo salió / tareas para la casa <textarea id="rehearsalResult" rows="3"></textarea></label>
+            <button class="primary" type="submit">Guardar ensayo</button>
+          </form>
+          <section class="panel"><div class="panel-head"><h3>Agenda de ensayos</h3><span id="rehearsalsCount">0 ensayos</span></div><div id="rehearsalsList" class="cards-list"></div></section>
+        </div>
+      </section>
+
+      <section id="logs" class="view">
+        <div class="layout-two">
+          <form class="panel form" id="logForm">
+            <h3>Nueva bitácora</h3>
+            <input type="hidden" id="logId" />
+            <label>Banda <select id="logBand"></select></label>
+            <label>Fecha <input id="logDate" type="date" required /></label>
+            <label>Qué trabajamos <textarea id="logWork" rows="3" required placeholder="Canciones, secciones, técnica..."></textarea></label>
+            <label>Logros del día <textarea id="logWins" rows="3" placeholder="Qué salió bien, avances del grupo o de alguien en especial"></textarea></label>
+            <label>Tareas para el próximo ensayo <textarea id="logTasks" rows="3" placeholder="Qué debe practicar cada quien"></textarea></label>
+            <button class="primary" type="submit">Guardar bitácora</button>
+          </form>
+          <section class="panel">
+            <div class="panel-head"><h3>Historial del proceso</h3><span id="logsCount">0 bitácoras</span></div>
+            <label class="filter-label">Ver banda <select id="logFilter"></select></label>
+            <div id="logsList" class="cards-list"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
