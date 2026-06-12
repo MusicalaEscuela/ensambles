@@ -1,7 +1,7 @@
 import { firebaseSettings } from './firebase-config.js';
 
-const COLLECTIONS = ['bands', 'students', 'songs', 'rehearsals', 'logs'];
-const state = { bands: [], students: [], songs: [], rehearsals: [], logs: [], backend: null };
+const COLLECTIONS = ['bands', 'students', 'songs', 'logs'];
+const state = { bands: [], students: [], songs: [], logs: [], backend: null };
 
 const $ = (id) => document.getElementById(id);
 const uid = () => crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random());
@@ -76,7 +76,7 @@ async function loadAll() {
 function setView(view) {
   document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === view));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
-  const names = { dashboard: 'Panel general', bands: 'Bandas', students: 'Estudiantes', songs: 'Canciones', rehearsals: 'Ensayos', logs: 'Bitácoras' };
+  const names = { dashboard: 'Panel general', bands: 'Bandas', students: 'Estudiantes', songs: 'Canciones', logs: 'Bitácoras' };
   $('viewTitle').textContent = names[view];
 }
 
@@ -84,7 +84,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click
 
 function fillBandSelects() {
   const options = ['<option value="">Sin asignar</option>', ...state.bands.map(b => `<option value="${b.id}">${escapeHtml(b.name)}</option>`)].join('');
-  ['studentBand','songBand','rehearsalBand','logBand'].forEach(id => $(id).innerHTML = options);
+  ['studentBand','songBand','logBand'].forEach(id => $(id).innerHTML = options);
   const current = $('logFilter').value;
   $('logFilter').innerHTML = ['<option value="">Todas las bandas</option>', ...state.bands.map(b => `<option value="${b.id}">${escapeHtml(b.name)}</option>`)].join('');
   $('logFilter').value = current;
@@ -100,13 +100,12 @@ function render() {
   $('statBands').textContent = state.bands.length;
   $('statStudents').textContent = state.students.length;
   $('statSongs').textContent = state.songs.length;
-  $('statRehearsals').textContent = state.rehearsals.length;
+  $('statLogs').textContent = state.logs.length;
   $('bandsCount').textContent = `${state.bands.length} bandas`;
   $('studentsCount').textContent = `${state.students.length} estudiantes`;
   $('songsCount').textContent = `${state.songs.length} canciones`;
-  $('rehearsalsCount').textContent = `${state.rehearsals.length} ensayos`;
   $('logsCount').textContent = `${state.logs.length} bitácoras`;
-  renderBands(); renderStudents(); renderSongs(); renderRehearsals(); renderLogs(); renderDashboard();
+  renderBands(); renderStudents(); renderSongs(); renderLogs(); renderDashboard();
 }
 
 function renderDashboard() {
@@ -115,10 +114,6 @@ function renderDashboard() {
     const songs = state.songs.filter(s => s.bandId === b.id).length;
     return card(b.name, `${b.level || 'Sin nivel'} · ${members} integrantes · ${songs} canciones`, b.goal || 'Todavía sin meta definida.', 'Banda', bandLogo(b));
   }).join('') || empty('Aún no hay bandas. Crea la primera en la sección Bandas.');
-
-  const now = Date.now();
-  const upcoming = state.rehearsals.filter(r => new Date(r.date) >= now - 86400000).sort((a,b) => new Date(a.date) - new Date(b.date)).slice(0,5);
-  $('upcomingRehearsals').innerHTML = upcoming.map(r => card(bandName(r.bandId), formatDate(r.date), r.goal || r.place || 'Ensayo programado.', 'Ensayo')).join('') || empty('No hay ensayos programados.');
 
   const recent = [...state.logs].sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0,5);
   $('recentLogs').innerHTML = recent.map(l => card(bandName(l.bandId), formatDay(l.date), l.work || '', 'Bitácora')).join('') || empty('Aún no hay bitácoras. Después de cada ensayo, registra cómo les fue.');
@@ -147,15 +142,6 @@ function renderSongs() {
     body: escapeHtml(s.notes || 'Sin apuntes.'), tag: s.status || 'Canción', edit: `editSong('${s.id}')`, del: `deleteItem('songs','${s.id}')`
   })).join('') || empty('Agrega la primera canción del repertorio.');
 }
-function renderRehearsals() {
-  const sorted = [...state.rehearsals].sort((a,b) => new Date(b.date) - new Date(a.date));
-  $('rehearsalsList').innerHTML = sorted.map(r => item({
-    title: bandName(r.bandId),
-    meta: `${formatDate(r.date)} · ${r.place || 'Sin lugar'}`,
-    body: `${escapeHtml(r.goal || 'Sin plan de trabajo.')}${r.result ? '<br><strong>Cómo salió:</strong> ' + escapeHtml(r.result) : ''}`,
-    tag: 'Ensayo', edit: `editRehearsal('${r.id}')`, del: `deleteItem('rehearsals','${r.id}')`
-  })).join('') || empty('Agenda el primer ensayo.');
-}
 function renderLogs() {
   const filter = $('logFilter').value;
   const logs = state.logs.filter(l => !filter || l.bandId === filter).sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -182,25 +168,6 @@ $('bandForm').addEventListener('submit', async e => { e.preventDefault(); await 
 $('studentForm').addEventListener('submit', async e => { e.preventDefault(); await save('students', { id:$('studentId').value, name:$('studentName').value, instrument:$('studentInstrument').value, bandId:$('studentBand').value, notes:$('studentNotes').value }); e.target.reset(); $('studentId').value=''; });
 $('songForm').addEventListener('submit', async e => { e.preventDefault(); await save('songs', { id:$('songId').value, title:$('songTitle').value, artist:$('songArtist').value, bandId:$('songBand').value, status:$('songStatus').value, notes:$('songNotes').value }); e.target.reset(); $('songId').value=''; });
 
-$('rehearsalForm').addEventListener('submit', async e => {
-  e.preventDefault();
-  const base = { bandId:$('rehearsalBand').value, place:$('rehearsalPlace').value, goal:$('rehearsalGoal').value, result:$('rehearsalResult').value };
-  const editingId = $('rehearsalId').value;
-  const repeat = editingId ? 1 : Number($('rehearsalRepeat').value || 1);
-  const firstDate = new Date($('rehearsalDate').value);
-  if (editingId) {
-    await save('rehearsals', { id: editingId, date: $('rehearsalDate').value, ...base });
-  } else {
-    for (let i = 0; i < repeat; i++) {
-      const d = new Date(firstDate.getTime() + i * 7 * 86400000);
-      const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0,16);
-      await state.backend.save('rehearsals', { id: uid(), date: local, ...base });
-    }
-    await loadAll();
-  }
-  e.target.reset(); $('rehearsalId').value=''; $('rehearsalRepeat').value='1';
-});
-
 $('logForm').addEventListener('submit', async e => { e.preventDefault(); await save('logs', { id:$('logId').value, bandId:$('logBand').value, date:$('logDate').value, work:$('logWork').value, wins:$('logWins').value, tasks:$('logTasks').value }); e.target.reset(); $('logId').value=''; });
 $('logFilter').addEventListener('change', renderLogs);
 
@@ -208,7 +175,6 @@ window.deleteItem = async (collection, id) => { if (!confirm('¿Eliminar este re
 window.editBand = id => { const b=state.bands.find(x=>x.id===id); $('bandId').value=b.id; $('bandName').value=b.name||''; $('bandLevel').value=b.level||'Inicial'; $('bandTeacher').value=b.teacher||''; $('bandSchedule').value=b.schedule||''; $('bandGoal').value=b.goal||''; setView('bands'); };
 window.editStudent = id => { const s=state.students.find(x=>x.id===id); $('studentId').value=s.id; $('studentName').value=s.name||''; $('studentInstrument').value=s.instrument||''; $('studentBand').value=s.bandId||''; $('studentNotes').value=s.notes||''; setView('students'); };
 window.editSong = id => { const s=state.songs.find(x=>x.id===id); $('songId').value=s.id; $('songTitle').value=s.title||''; $('songArtist').value=s.artist||''; $('songBand').value=s.bandId||''; $('songStatus').value=s.status||'Propuesta'; $('songNotes').value=s.notes||''; setView('songs'); };
-window.editRehearsal = id => { const r=state.rehearsals.find(x=>x.id===id); $('rehearsalId').value=r.id; $('rehearsalBand').value=r.bandId||''; $('rehearsalDate').value=r.date||''; $('rehearsalPlace').value=r.place||''; $('rehearsalGoal').value=r.goal||''; $('rehearsalResult').value=r.result||''; $('rehearsalRepeat').value='1'; setView('rehearsals'); };
 window.editLog = id => { const l=state.logs.find(x=>x.id===id); $('logId').value=l.id; $('logBand').value=l.bandId||''; $('logDate').value=l.date||''; $('logWork').value=l.work||''; $('logWins').value=l.wins||''; $('logTasks').value=l.tasks||''; setView('logs'); };
 
 (async function init(){ state.backend = await createBackend(); await loadAll(); })();

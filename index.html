@@ -26,7 +26,6 @@
         <button class="nav-btn" data-view="bands">Bandas</button>
         <button class="nav-btn" data-view="students">Estudiantes</button>
         <button class="nav-btn" data-view="songs">Canciones</button>
-        <button class="nav-btn" data-view="rehearsals">Ensayos</button>
         <button class="nav-btn" data-view="logs">Bitácoras</button>
       </nav>
 
@@ -52,16 +51,12 @@
           <article class="stat-card"><span>Bandas</span><strong id="statBands">0</strong></article>
           <article class="stat-card"><span>Estudiantes</span><strong id="statStudents">0</strong></article>
           <article class="stat-card"><span>Canciones</span><strong id="statSongs">0</strong></article>
-          <article class="stat-card"><span>Ensayos</span><strong id="statRehearsals">0</strong></article>
+          <article class="stat-card"><span>Bitácoras</span><strong id="statLogs">0</strong></article>
         </div>
         <div class="dashboard-grid">
           <section class="panel">
             <div class="panel-head"><h3>Bandas activas</h3><span>Integrantes y repertorio</span></div>
             <div id="bandOverview" class="cards-list"></div>
-          </section>
-          <section class="panel">
-            <div class="panel-head"><h3>Próximos ensayos</h3><span>Agenda rápida</span></div>
-            <div id="upcomingRehearsals" class="cards-list"></div>
           </section>
           <section class="panel">
             <div class="panel-head"><h3>Últimas bitácoras</h3><span>Cómo va el proceso</span></div>
@@ -80,7 +75,6 @@
             <label>Docente que la dirige <input id="bandTeacher" placeholder="Nombre del profe" /></label>
             <label>Día y hora de ensayo <input id="bandSchedule" placeholder="Sábados 11:00 a.m." /></label>
             <label>Meta de la banda <textarea id="bandGoal" rows="3" placeholder="Qué están preparando (muestra, concierto, repertorio...)"></textarea></label>
-            <p class="hint">El logo de cada banda se guarda en la carpeta <strong>logos</strong> con el nombre de la banda (ej. <em>logos/young-metal.png</em>). Mientras llega, se muestra la inicial.</p>
             <button class="primary" type="submit">Guardar banda</button>
           </form>
           <section class="panel"><div class="panel-head"><h3>Listado</h3><span id="bandsCount">0 bandas</span></div><div id="bandsList" class="cards-list"></div></section>
@@ -115,28 +109,6 @@
             <button class="primary" type="submit">Guardar canción</button>
           </form>
           <section class="panel"><div class="panel-head"><h3>Repertorio</h3><span id="songsCount">0 canciones</span></div><div id="songsList" class="cards-list"></div></section>
-        </div>
-      </section>
-
-      <section id="rehearsals" class="view">
-        <div class="layout-two">
-          <form class="panel form" id="rehearsalForm">
-            <h3>Nuevo ensayo</h3>
-            <input type="hidden" id="rehearsalId" />
-            <label>Banda <select id="rehearsalBand"></select></label>
-            <label>Fecha y hora <input id="rehearsalDate" type="datetime-local" required /></label>
-            <label>¿Se repite? <select id="rehearsalRepeat">
-              <option value="1">Solo este ensayo</option>
-              <option value="4">Cada semana, durante 1 mes</option>
-              <option value="8">Cada semana, durante 2 meses</option>
-              <option value="12">Cada semana, durante 3 meses</option>
-            </select></label>
-            <label>Lugar <input id="rehearsalPlace" placeholder="Sede Musicala / Salón" /></label>
-            <label>Qué se va a trabajar <textarea id="rehearsalGoal" rows="3"></textarea></label>
-            <label>Cómo salió / tareas para la casa <textarea id="rehearsalResult" rows="3"></textarea></label>
-            <button class="primary" type="submit">Guardar ensayo</button>
-          </form>
-          <section class="panel"><div class="panel-head"><h3>Agenda de ensayos</h3><span id="rehearsalsCount">0 ensayos</span></div><div id="rehearsalsList" class="cards-list"></div></section>
         </div>
       </section>
 
